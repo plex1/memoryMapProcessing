@@ -1,0 +1,80 @@
+#  Configuration and status register definitions for MotorControlPeripheral
+memory-map:
+ bus: wb-32-be
+ name: MotorControlPeripheral
+ description: "APB 3 Peripheral which implements a motor controller"
+ children:
+  - reg:
+      name: pos_x
+      address: 0
+      width: 32
+      access: rw
+      children:
+        - field:
+            name: pos_x
+            description: "target position for x motor"
+            range: 15-0
+            comment: "position in number of steps\n Range: 0-9999"
+  - reg:
+      name: pos_y
+      address: 4
+      width: 32
+      access: rw
+      children:
+        - field:
+            name: pos_y
+            description: "target position for y motor"
+            range: 15-0
+            comment: "position in number of steps\n Range: 0-9999"
+  - reg:
+      name: control
+      address: 8
+      width: 32
+      access: rw
+      children:
+        - field:
+            name: drive_mode
+            description: "driving mode"
+            range: 1-0
+            comment: "0: NORMAL\n1: SLOW\n3: READ"
+        - field:
+            name: ignore_es
+            description: "ignore end switch"
+            range: 2
+            comment: "0: do not ignore\n1: ignore"
+        - field:
+            name: test_led
+            description: "test led"
+            range: 6
+            comment: "0: off\n1: on"
+  - reg:
+      name: position
+      address: 12
+      width: 32
+      access: ro
+      children:
+        - field:
+            name: potentiometer
+            description: "potentiometer value in raw ADC data (LSB)"
+            range: 9-0
+            comment: "Range: 0-1023"
+        - field:
+            name: end_switch_1
+            description: "end switch 1 status"
+            range: 16
+            comment: "0: off\n1: on"
+        - field:
+            name: end_switch_2
+            description: "end switch 2 status"
+            range: 17
+            comment: "0: off\n1: on"
+  - reg:
+      name: id
+      address: 20
+      width: 32
+      access: ro
+      children:
+        - field:
+            name: id
+            description: "ID of this module (default: 0x1d)"
+            range: 7-0
