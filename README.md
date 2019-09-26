@@ -3,14 +3,13 @@
 
 ## Description
 
-The CsrProcessing scala code extracts the info from BusSlaveFactory and transforms it to a data interchange format. Supported are: [Cheby](https://gitlab.cern.ch/cohtdrivers/cheby) , JSON and YAML.
+The CsrProcessing package *(csr=configuration and status register)* is a tool for [SpinalHDL](https://github.com/SpinalHDL/SpinalHDL). It can extract the memory map from a SpinalHDL BusSlaveFactory instance and transform it to a data interchange format. Supported are: [Cheby](https://gitlab.cern.ch/cohtdrivers/cheby) , JSON and YAML. With this flow automated documentation or integration of the memory map into other programs or programming languages are easily possible.
 
-To make the most of this tool, the *documentation* field of the BusSlaveFactory should be formatted
-with a specific structure. CsrProcessing will parse the documentation if it complies with this format.
+To make the most of this tool, the *documentation* field of the BusSlaveFactory should have a specific format. CsrProcessing will parse the *documentation* field if it complies with this format.
 
 ## Format
 
-Valid formats for the BusSlaveFactory *documentation* argument: 
+Valid formats for the BusSlaveFactory *documentation* argument are:
 - "RegName | FieldName | FieldDescription | FieldComment"
 - "RegName | FieldName | FieldDescription"        (Comment will be empty)
 - "| FieldName | FieldDescription"                (FieldName will be used as the RegName)
@@ -23,7 +22,7 @@ Definitions (from Cheby):
  - **comment:** This is a longer or more detailed text that will be copied into the
      generated documentation. New lines are allowed here by using ```\n```.
 
-See ```CcsrProcessingExample.scala``` for a sample code.
+See [CsrProcessingExample.scala](src/main/scala/csrProcessing/CsrProcessingExample.scala) for a sample code.
 
 ## Usage
 
@@ -39,13 +38,13 @@ sbt "runMain csrProcessing.MyTopLevelVerilog"
 
 These commands will generate the output files: ```MyTopLevel.v```, ```MotorControlPeripheral.cheby``` and ```MotorControlPeripheral.json```.
 
-We can now use [Cheby](https://gitlab.cern.ch/cohtdrivers/cheby) to auto-generate documentaion files.
+We can now use [Cheby](https://gitlab.cern.ch/cohtdrivers/cheby) to auto-generate documentation files.
 
 ```sh
 # Generate html documentation
 cheby --doc=html --gen-doc=mcp.html -i MotorControlPeripheral.cheby
 
-#Generate c header
+# Generate c header
 cheby --gen-c mcp.h -i MotorControlPeripheral.cheby
 ```
 
