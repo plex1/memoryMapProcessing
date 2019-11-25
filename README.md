@@ -1,4 +1,4 @@
-# Memory Map Processing (MMProcessing) for Spinal HDL
+# Memory Map Processing Tool for Spinal HDL
 
 
 ## Description
