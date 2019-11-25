@@ -1,10 +1,10 @@
-package csrProcessing
+package mmProcessing
 
-// csrProcessing extract the info from BusSlaveFactory into a data interchage format.
+// mmProcessing extract the info from BusSlaveFactory into a data interchage format.
 // Supported are: Cheby, JSON and YAML
 //
 // To make the most of this tool the documentation field of the BusSlaveFactory should be formatted
-// with a specific structure. csrProcessing will parse the documentation of it complies with this structure.
+// with a specific structure. mmProcessing will parse the documentation of it complies with this structure.
 //
 // Format of the BusSlaveFactory documentation argument:
 // Valid Formats: "RegName | FieldName | FieldDescription | FieldComment"
@@ -18,7 +18,7 @@ package csrProcessing
 // - comment: This is a longer or more detailed text that will be copied into the
 //     generated documentation. New lines are allowed with \n
 //
-//  see CsrProcessingExample.scala for a sample code
+//  see MMProcessingExample.scala for a sample code
 
 
 import io.circe._, io.circe.generic.auto._, io.circe.parser._, io.circe.syntax._, io.circe.Printer
@@ -54,13 +54,13 @@ case class RegCheby(name: String, width: Int, access: String, children: List[Fie
 case class FieldChildren(field : FieldCheby)
 case class FieldCheby(name: String, description: String, range: String)
 
-// CsrProcessing data structure definition
+// MMProcessing data structure definition
 case class Field(bitOffset: Int, bitWidth: Int, name: String, description: String, comment: String = "", access: Access)
 case class Register(address: BigInt, name: String, fields : List[Field], access: Access)
-case class CsrpDefinition(name: String, description: String, offset: BigInt = 0, registers: List[Register])
+case class MMpDefinition(name: String, description: String, offset: BigInt = 0, registers: List[Register])
 
 // Abstract definition of format to generate files with any format
-abstract class CsrStrings(){
+abstract class MMStrings(){
   def addHeaderString(builder: StringBuilder, name: String, description: String)
   def addRegisterStartString(builder: StringBuilder, register: Register)
   def addRegisterEndString(builder: StringBuilder, register: Register)
@@ -71,7 +71,7 @@ abstract class CsrStrings(){
 }
 
 // Definition of format to generate files with Cheby format
-case class CsrChebyStrings(reg_width : Int) extends CsrStrings{
+case class MMChebyStrings(reg_width : Int) extends MMStrings{
 
   def addHeaderString(builder: StringBuilder, name: String = "None", description: String = "None") = {
     builder ++= s"#  Configuration and status register definitions for ${name}\n"
@@ -136,31 +136,31 @@ object DocumentationFormat {
 
 }
 
-// config of CsrProcessing
-case class CsrProcessingConfig(name: String = "None", description: String = "None", offset: BigInt = 0, addr_inc: Int = 4,
+// config of MMProcessing
+case class MMProcessingConfig(name: String = "None", description: String = "None", offset: BigInt = 0, addr_inc: Int = 4,
                                fill_gaps: Boolean = true, nofield_keep : Boolean = false, add_nodocu: Boolean = true)
 
-// main class Csrprocessing
-class CsrProcessing(busCtrl: BusSlaveFactoryDelayed, config : CsrProcessingConfig) {
+// main class MMprocessing
+class MMProcessing(busCtrl: BusSlaveFactoryDelayed, config : MMProcessingConfig) {
 
   val reg_width = 32
 
 
   // helper function
-  def addRegisterString(csrStrings: CsrStrings, builder: StringBuilder, register: Register): Unit = {
+  def addRegisterString(mmStrings: MMStrings, builder: StringBuilder, register: Register): Unit = {
 
-    csrStrings.addRegisterStartString(builder, register)
+    mmStrings.addRegisterStartString(builder, register)
 
-    if (register.fields.nonEmpty || config.nofield_keep) csrStrings.addFieldsStartString(builder, register)
+    if (register.fields.nonEmpty || config.nofield_keep) mmStrings.addFieldsStartString(builder, register)
 
     // add fields
     for (field <- register.fields) {
       // add field
-      csrStrings.addFieldString(builder, field)
+      mmStrings.addFieldString(builder, field)
     }
 
-    if (register.fields.nonEmpty || config.nofield_keep) csrStrings.addFieldsEndString(builder, register)
-    csrStrings.addRegisterEndString(builder, register)
+    if (register.fields.nonEmpty || config.nofield_keep) mmStrings.addFieldsEndString(builder, register)
+    mmStrings.addRegisterEndString(builder, register)
   }
 
   // extract list of registers from busCtrl instance
@@ -231,28 +231,28 @@ class CsrProcessing(busCtrl: BusSlaveFactoryDelayed, config : CsrProcessingConfi
 
     // Construct Cheby string
     val chebyBuilder = new StringBuilder()
-    val csrStrings = CsrChebyStrings(reg_width)
-    csrStrings.addHeaderString(chebyBuilder, config.name , config.description)
+    val mmStrings = MMChebyStrings(reg_width)
+    mmStrings.addHeaderString(chebyBuilder, config.name , config.description)
     for (reg <- regs) {
       if (reg.fields.nonEmpty)
-        addRegisterString(csrStrings, chebyBuilder, Register(reg.address, reg.name, reg.fields, reg.fields(0).access))
+        addRegisterString(mmStrings, chebyBuilder, Register(reg.address, reg.name, reg.fields, reg.fields(0).access))
     }
-    csrStrings.addFooterString(chebyBuilder)
+    mmStrings.addFooterString(chebyBuilder)
 
     chebyBuilder.toString
 
   }
 
-  // genrate json or yaml string for csrProcessing data structure
-  def csrProcessingFormatFileString(regs: List[Register], outputFormat: String): String = {
+  // genrate json or yaml string for mmProcessing data structure
+  def mmProcessingFormatFileString(regs: List[Register], outputFormat: String): String = {
 
-    // Construct CsrProcessing data structure
-    val csrpDefintion = CsrpDefinition(config.name, config.description, config.offset, regs)
+    // Construct MMProcessing data structure
+    val mmpDefintion = MMpDefinition(config.name, config.description, config.offset, regs)
 
     // serialize case class
     outputFormat match {
-      case "json_csrp" => csrpDefintion.asJson.pretty(Printer.indented("  "))
-      case "yaml_csrp" => csrpDefintion.asJson.asYaml.spaces4
+      case "json_mmp" => mmpDefintion.asJson.pretty(Printer.indented("  "))
+      case "yaml_mmp" => mmpDefintion.asJson.asYaml.spaces4
       case _ =>  ""
     }
   }
@@ -277,7 +277,7 @@ class CsrProcessing(busCtrl: BusSlaveFactoryDelayed, config : CsrProcessingConfi
 
     // serialize case class
     outputFormat match {
-      case "json_cheby" => chebyDefinition.asJson.pretty(Printer.indented("  "))//csrDefintion.asJson.noSpaces
+      case "json_cheby" => chebyDefinition.asJson.pretty(Printer.indented("  "))//mmDefintion.asJson.noSpaces
       case "yaml_cheby" => chebyDefinition.asJson.asYaml.spaces4
       case _ =>  ""
     }
@@ -285,10 +285,10 @@ class CsrProcessing(busCtrl: BusSlaveFactoryDelayed, config : CsrProcessingConfi
   }
 
 
-  def csrFileString(regs: List[Register], outputFormat: String): String = {
+  def mmFileString(regs: List[Register], outputFormat: String): String = {
 
     outputFormat match {
-      case "json_csrp" | "yaml_csrp" => csrProcessingFormatFileString(regs, outputFormat)
+      case "json_mmp" | "yaml_mmp" => mmProcessingFormatFileString(regs, outputFormat)
       case "json_cheby" | "yaml_cheby" => chebyFormatFileString(regs, outputFormat)
       case "cheby" => chebyFileString(regs)
       case _ =>  ""
@@ -296,8 +296,8 @@ class CsrProcessing(busCtrl: BusSlaveFactoryDelayed, config : CsrProcessingConfi
   }
 
 
-  def writeCsrFile(filename:String, outputFormat: String = "json"): Unit ={
-    val str =  csrFileString(extractRegisters, outputFormat)
+  def writeMMFile(filename:String, outputFormat: String = "json"): Unit ={
+    val str =  mmFileString(extractRegisters, outputFormat)
     val pw = new PrintWriter(new File(filename ))
     pw.write(str)
     pw.close()

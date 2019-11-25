@@ -1,11 +1,11 @@
-# CsrProcessing
+# Memory Map Processing (MMProcessing) for Spinal HDL
 
 
 ## Description
 
-The CsrProcessing package *(csr=configuration and status register)* is a tool for [SpinalHDL](https://github.com/SpinalHDL/SpinalHDL). It can extract the memory map from a SpinalHDL BusSlaveFactory instance and transform it to a data interchange format. Supported are: [Cheby](https://gitlab.cern.ch/cohtdrivers/cheby) , JSON and YAML. With this flow automated documentation or integration of the memory map into other programs or programming languages are easily possible.
+The mmProcessing package *(mm=memory map* is a tool for [SpinalHDL](https://github.com/SpinalHDL/SpinalHDL). It can extract the memory map from a SpinalHDL BusSlaveFactory instance and transform it to a data interchange format. Supported are: [Cheby](https://gitlab.cern.ch/cohtdrivers/cheby) , JSON and YAML. With this flow automated documentation or integration of the memory map into other programs or programming languages are easily possible.
 
-To make the most of this tool, the *documentation* field of the BusSlaveFactory should have a specific format. CsrProcessing will parse the *documentation* field if it complies with this format.
+To make the most of this tool, the *documentation* field of the BusSlaveFactory should have a specific format. MMProcessing will parse the *documentation* field if it complies with this format.
 
 ## Format
 
@@ -22,17 +22,17 @@ Definitions (from Cheby):
  - **comment:** This is a longer or more detailed text that will be copied into the
      generated documentation. New lines are allowed here by using ```\n```.
 
-See [CsrProcessingExample.scala](src/main/scala/csrProcessing/CsrProcessingExample.scala) for a sample code.
+See [MMProcessingExample.scala](src/main/scala/mmProcessing/MMProcessingExample.scala) for a sample code.
 
 ## Usage
 
 Run the SpinalHDL synthesis:
 
 ```sh
-cd CsrProcessing
+cd MMProcessing
 
-//Generate verilog and CsrProcessing output (Cheby and JSON)
-sbt "runMain csrProcessing.MyTopLevelVerilog"
+//Generate verilog and MMProcessing output (Cheby and JSON)
+sbt "runMain mmProcessing.MyTopLevelVerilog"
 
 ```
 
@@ -48,7 +48,7 @@ cheby --doc=html --gen-doc=mcp.html -i MotorControlPeripheral.cheby
 cheby --gen-c mcp.h -i MotorControlPeripheral.cheby
 ```
 
-Pre-generated files can be found here: [mcp.html](http://htmlpreview.github.io/?https://github.com/plex1/CsrProcessing/blob/master/mcp.html) and [mcp.h](mcp.h)
+Pre-generated files can be found here: [mcp.html](http://htmlpreview.github.io/?https://github.com/plex1/MMProcessing/blob/master/mcp.html) and [mcp.h](mcp.h)
 
 
 

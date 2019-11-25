@@ -1,4 +1,4 @@
-package csrProcessing
+package mmProcessing
 
 
 import spinal.core._
@@ -53,10 +53,10 @@ class MotorControlPeripheral extends Component {
 
   // generate documentation output
   val peripheral_apb3_offset = 0xF0030000l
-  val csrp = new CsrProcessing(busCtrl, CsrProcessingConfig("MotorControlPeripheral",
+  val mmp = new MMProcessing(busCtrl, MMProcessingConfig("MotorControlPeripheral",
     "APB 3 Peripheral which implements a motor controller", peripheral_apb3_offset))
-  csrp.writeCsrFile("MotorControlPeripheral.cheby", "cheby")
-  csrp.writeCsrFile("MotorControlPeripheral.json", "json_csrp")
+  mmp.writeMMFile("MotorControlPeripheral.cheby", "cheby")
+  mmp.writeMMFile("MotorControlPeripheral.json", "json_mmp")
 
 }
 
