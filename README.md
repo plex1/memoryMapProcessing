@@ -3,7 +3,7 @@
 
 ## Description
 
-The mmProcessing package *(mm=memory map* is a tool for [SpinalHDL](https://github.com/SpinalHDL/SpinalHDL). It can extract the memory map from a SpinalHDL BusSlaveFactory instance and transform it to a data interchange format. Supported are: [Cheby](https://gitlab.cern.ch/cohtdrivers/cheby) , JSON and YAML. With this flow automated documentation or integration of the memory map into other programs or programming languages are easily possible.
+The mmProcessing package *(mm=memory map)* is a tool for [SpinalHDL](https://github.com/SpinalHDL/SpinalHDL). It can extract the memory map from a SpinalHDL BusSlaveFactory instance and transform it to a data interchange format. Supported are: [Cheby](https://gitlab.cern.ch/cohtdrivers/cheby) , JSON and YAML. With this flow automated documentation or integration of the memory map into other programs or programming languages are easily possible.
 
 To make the most of this tool, the *documentation* field of the BusSlaveFactory should have a specific format. MMProcessing will parse the *documentation* field if it complies with this format.
 
